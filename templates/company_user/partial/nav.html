@@ -1,0 +1,7 @@
+<nav class="topnav navbar navbar-expand shadow navbar-light bg-white" id="sidenavAccordion">
+    <a class="navbar-brand" href="{% url 'company:index' %}">아이올 진료비</a>
+    <a class="text-black mr-4" href="{% url 'company:index' %}">청구 목록</a>
+    <a class="text-black mr-4" href="{% url 'company:claim_create' %}">청구 등록</a>
+    <a class="text-black mr-4" href="index.html">{{ request.user.companyuser.company.name }}/{{ request.user.name }}</a>
+    <a class="text-black mr-4" href="index.html">로그아웃</a>
+</nav>

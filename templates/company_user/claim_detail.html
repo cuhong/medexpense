@@ -1,0 +1,139 @@
+{% extends 'company_user/base.html' %}
+{% load static %}
+{% load bootstrap_pagination %}
+{% load crispy_forms_tags %}
+
+{% block container %}
+    <div class="modal fade" id="createExpenseModal" tabindex="-1" role="dialog"
+         aria-labelledby="createExpenseModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createExpenseModalTitle">진료비 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% crispy expense_form %}
+                    <div id="div_id_expense_file_a" class="form-group">
+                        <label for="id_expense_file_a" class=" requiredField">진료비영수증<span class="asteriskField">*</span> </label>
+                        <div class=""> <input type="file" name="expense_file_a" class="numberinput form-control" required="" id="id_expense_file_a"> </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary-soft" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" onclick="saveExpense()">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    function saveExpense() {
+        uploadProtectedFile('id_expense_file_a', function (response) {
+            document.getElementById('id_expense_file').value = response.data.id
+            var formData = $("#expenseForm").serialize();
+            $.ajax({
+                type: "POST",
+                data: formData,
+                success: function (response) {
+                    if (response.result) {
+                        alert('저장되었습니다.')
+                    } else {
+                        alert('오류')
+                    }
+                    location.reload()
+                },
+                error: function (err) {
+                    alert('네트워크 오류. 잠시후 다시 시도해주세요.')
+                }
+            })
+        }, function (err) {
+            console.log(err)
+        })
+    }
+    </script>
+    <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
+        <div class="mr-4 mb-3 mb-sm-0">
+            <h1 class="mb-0">청구 상세</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <button type="button" class="btn btn-primary"
+                            onclick="$('#createExpenseModal').modal('show')">진료비 추가
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless table-striped text-sm">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>진료비 타입</th>
+                            <th>의료기관명</th>
+                            <th>진료비파일</th>
+                            <th>진료비총액</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for expense in expense_list %}
+                            <tr>
+                            <td>{{ expense.expense_type }}</td>
+                            <td>{{ expense.org_name }}</td>
+                            <td><a class="btn btn-primary btn-sm" href="{% url 'common:protected_file' %}?pf_id={{ expense.expense_file.id }}" target="_blank">보기</a> </td>
+                            <td>{{ expense.expense_amount }}</td>
+                            <td>{% for esc in expense_status_choices %}{% if esc.0 == expense.status %}{{ esc.1 }}{% endif %}{% endfor %}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% bootstrap_paginate page_obj range=10 %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-2">
+                <div class="card-header">청구 기본정보</div>
+                <div class="card-body">
+                    <table class="table table-borderless table-striped table-sm text-center">
+                        <tbody class="thead-light">
+                        <tr>
+                            <th>일련번호</th>
+                            <td>{{ claim.serial }}</td>
+                        </tr>
+                        <tr>
+                            <th>청구인과의 관계</th>
+                            <td>{{ claim.relation__name }}</td>
+                        </tr>
+                        <tr>
+                            <th>청구대상 성명</th>
+                            <td>{{ claim.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>담당자</th>
+                            <td>{{ claim.manager__name|default_if_none:"미지정" }}</td>
+                        </tr>
+                        <tr>
+                            <th>상태</th>
+                            <td>
+                                {% for st in claim_status_choices %}
+                                    {% if st.0 == claim.status %}
+                                        {{ st.1 }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>등록일시</th>
+                            <td>{{ claim.registered_at|date:"Y/m/d H:i" }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block">제출</button>
+        </div>
+    </div>
+{% endblock %}

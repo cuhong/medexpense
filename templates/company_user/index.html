@@ -1,0 +1,45 @@
+{% extends 'company_user/base.html' %}
+{% load static %}
+{% load bootstrap_pagination %}
+
+{% block container %}
+    <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
+    <div class="mr-4 mb-3 mb-sm-0">
+        <h1 class="mb-0">내 청구목록</h1>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <table class="table table-striped table-borderless text-sm">
+            <thead>
+            <tr>
+                <th>일련번호</th>
+                <th>청구인과의 관계</th>
+                <th>청구대상 성명</th>
+                <th>등록일시</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for claim in claim_list %}
+                <tr>
+                <td>{{ claim.serial }}</td>
+                <td>{{ claim.relation__name }}</td>
+                <td>{{ claim.name }}</td>
+                <td>{{ claim.registered_at }}</td>
+                <td>
+                    {% for cs in claim_status_choices %}
+                        {% if cs.0 == claim.status %}
+                            {{ cs.1 }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td><a class="btn btn-primary btn-sm" href="{% url 'company:claim_detail' claim_id=claim.id %}">상세</a> </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% bootstrap_paginate page_obj range=10 %}
+    </div>
+</div>
+{% endblock %}
