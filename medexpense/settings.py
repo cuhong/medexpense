@@ -8,7 +8,7 @@ SECRET_KEY = '*$lzy5jjvo8h5@pou_$vvc-qb-e1ws@8ju3&tyob$&voub9e=x'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["itechs.pythonanywhere.com"]
 
 
 INSTALLED_APPS = [
