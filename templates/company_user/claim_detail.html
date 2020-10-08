@@ -2,6 +2,7 @@
 {% load static %}
 {% load bootstrap_pagination %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block container %}
     <div class="modal fade" id="createExpenseModal" tabindex="-1" role="dialog"
@@ -83,7 +84,7 @@
                             <td>{{ expense.expense_type }}</td>
                             <td>{{ expense.org_name }}</td>
                             <td><a class="btn btn-primary btn-sm" href="{% url 'common:protected_file' %}?pf_id={{ expense.expense_file.id }}" target="_blank">보기</a> </td>
-                            <td>{{ expense.expense_amount }}</td>
+                            <td>{{ expense.expense_amount|intcomma }}</td>
                             <td>{% for esc in expense_status_choices %}{% if esc.0 == expense.status %}{{ esc.1 }}{% endif %}{% endfor %}</td>
                             </tr>
                         {% endfor %}

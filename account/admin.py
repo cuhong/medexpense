@@ -29,6 +29,12 @@ class UserAdmin(BaseUserAdmin):
         ('Personal info', {'fields': ('name', 'cellphone',)}),
         ('Permissions', {'fields': ('is_admin', 'is_superuser', 'is_active')}),
     )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'name', 'cellphone', 'password1', 'password2'),
+        }),
+    )
 
 
 admin.site.register(User, UserAdmin)
